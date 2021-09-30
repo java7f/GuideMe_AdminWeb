@@ -12,12 +12,17 @@ import { LoginComponent } from './login/login.component';
 import { environment } from 'src/environments/environment';
 import { LandingComponent } from './landing/landing.component';
 import { LocationsService } from 'src/services/locations.service';
+import { AddLocationComponent } from './add-location/add-location.component';
+
+import { GoogleMapsModule } from '@angular/google-maps'
+import { VimeModule } from '@vime/angular';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    LandingComponent
+    LandingComponent,
+    AddLocationComponent,
   ],
   imports: [
     BrowserModule,
@@ -26,7 +31,9 @@ import { LocationsService } from 'src/services/locations.service';
     FormsModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    GoogleMapsModule,
+    VimeModule
   ],
   providers: [
     AuthenticationService,
