@@ -10,12 +10,14 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { environment } from 'src/environments/environment';
 import { LandingComponent } from './landing/landing.component';
+import { AddLocationComponent } from './add-location/add-location.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    LandingComponent
+    LandingComponent,
+    AddLocationComponent,
   ],
   imports: [
     BrowserModule,
