@@ -1,4 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+
 :root {
-    --bs-primary: #F54D79;
+    --primary: #e84464;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.text-primary {
+    color: var(--primary) !important;
 }
