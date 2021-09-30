@@ -12,6 +12,9 @@ import { environment } from 'src/environments/environment';
 import { LandingComponent } from './landing/landing.component';
 import { AddLocationComponent } from './add-location/add-location.component';
 
+import { GoogleMapsModule } from '@angular/google-maps'
+import { VimeModule } from '@vime/angular';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,7 +28,9 @@ import { AddLocationComponent } from './add-location/add-location.component';
     FormsModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    GoogleMapsModule,
+    VimeModule
   ],
   providers: [AuthenticationService],
   bootstrap: [AppComponent]
