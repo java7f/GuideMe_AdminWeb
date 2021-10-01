@@ -1,5 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
+import { ActivatedRoute } from '@angular/router';
+import { Audioguide } from 'src/models/Audioguide';
+import { Location } from 'src/models/Location';
+import { LocationsService } from 'src/services/locations.service';
 
 @Component({
   selector: 'app-add-location',
@@ -20,11 +24,20 @@ export class AddLocationComponent implements OnInit {
   audiomsg: string = "";
   audiourl: any;
 
-  constructor() {}
+  locationInfo: Location = new Location();
+  audioguide: Audioguide = new Audioguide();
+  locationId: string;
+
+  constructor(
+    private locationService: LocationsService,
+    private route: ActivatedRoute 
+  ) {}
 
   ngOnInit() {
-    var body = document.getElementsByTagName("body")[0];
-    body.classList.add("landing-page");
+    this.locationId = this.route.snapshot.paramMap.get('id')!;
+    if(this.locationId) {
+      this.getLocation()
+    }
   }
 
   ngAfterViewInit() {
@@ -47,6 +60,8 @@ export class AddLocationComponent implements OnInit {
         } else {
           bounds.extend(place.geometry.location);
         }
+        this.locationInfo.coordinates.latitude = place.geometry.location.lat();
+        this.locationInfo.coordinates.longitude = place.geometry.location.lng();
       });
       this.map.fitBounds(bounds);
     })
@@ -69,8 +84,10 @@ export class AddLocationComponent implements OnInit {
 		reader.readAsDataURL(event.target.files[0]);
 		
 		reader.onload = (_event) => {
-			this.msg = "";
-			this.url = reader.result; 
+      this.msg = "";
+			this.url = reader.result;
+      this.locationInfo.locationPhotoFileBase64 = this.url.toString().split(',')[1]; 
+      this.locationInfo.locationPhotoFileName = event.target.files[0].name;
 		}
   }
 
@@ -83,12 +100,47 @@ export class AddLocationComponent implements OnInit {
 
     this.audioFile = event.target.files[0];
     this.audiourl = URL.createObjectURL(event.target.files[0]);
+
+    var reader = new FileReader();
+		reader.readAsDataURL(this.audioFile);
+		
+		reader.onload = (_event) => {
+			let url  = reader.result;
+      this.audioguide.audioFileBase64 = url!.toString().split(',')[1]; 
+      this.audioguide.audioFileName = event.target.files[0].name;
+		}
+
     this.audiomsg = "";
   }
 
   ngOnDestroy() {
-    var body = document.getElementsByTagName("body")[0];
-    body.classList.remove("landing-page");
   }
 
+  async saveLocation() {
+    try {
+      console.log(this.locationInfo);
+      await this.locationService.insertLocation(this.locationInfo);
+    }
+    catch(error: any) {
+      console.log(error.message);
+    }
+  }
+
+  async getLocation() {
+    try {
+      this.locationInfo = await this.locationService.getLocation(this.locationId);
+    }
+    catch(error: any) {
+      console.log(error.message);
+    }
+  }
+
+  async saveAudiofile() {
+    try {
+      await this.locationService.insertAudioguide(this.audioguide);
+    }
+    catch(error: any) {
+      console.log(error.message);
+    }
+  }
 }

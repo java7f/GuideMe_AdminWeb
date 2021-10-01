@@ -5,5 +5,6 @@ export class Audioguide {
     audioguideUrl: string;
     audioLocale: string;
     audioFileName: string;
-    audioFile: File;
+    audioFile: string;
+    audioFileBase64: string; //Encoded in base64
 }

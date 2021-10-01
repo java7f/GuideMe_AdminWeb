@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Audioguide } from 'src/models/Audioguide';
-import { Utils } from 'src/models/Utils';
+import { buildRequestWithFile, Utils } from 'src/models/Utils';
 import { Location } from 'src/models/Location';
 import { AuthenticationService } from './authentication.service';
 
@@ -22,15 +22,16 @@ export class LocationsService {
     return await this.http.get<Location>(`${Utils.LOCATION_API_URL}/${locationId}`, headerOptions).toPromise();
   } 
   
-  public async getAllLocations(userId: string): Promise<Location[]> {
+  public async getAllLocations(): Promise<Location[]> {
     let headerOptions = await this.authenticationService.getTokenHeader();
+    let userId = await this.authenticationService.getCurrentUserId();
     return await this.http.get<Location[]>(`${Utils.LOCATION_API_URL}/all/${userId}`, headerOptions).toPromise();
   }
   
   public async insertLocation(location: Location): Promise<void> {
-    //let headerOptions = await this.authenticationService.getTokenHeader();
-    console.log("aiuda");
-    await this.http.post<void>(`${Utils.LOCATION_API_URL}`, location).toPromise();
+    let headerOptions = await this.authenticationService.getTokenHeader();
+    location.userId = await this.authenticationService.getCurrentUserId();
+    await this.http.post<void>(`${Utils.LOCATION_API_URL}`, location, headerOptions).toPromise();
   }
   
   public async updateLocation(location: Location): Promise<void> {
