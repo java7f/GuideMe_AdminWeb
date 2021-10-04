@@ -1,5 +1,9 @@
 <div class="container">
     <div class="row">
+        <div class="col-lg-6"><h1 class="text-left">Locations</h1></div>
+        <div class="col-lg-6"><button [routerLink]="['/location']" class="btn btn-primary mr-1 float-end">Add new location</button></div>
+    </div>
+    <div class="row">
         <div *ngFor="let location of locations" class="col-sm-4">
             <div class="card-deck">
                 <a [routerLink]="" (click)="editLocation(location.id)">

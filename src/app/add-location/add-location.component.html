@@ -1,77 +1,104 @@
 <div class="container">
     <h1>Add new location</h1>
-    <div class="row mt-5">
-        <div class="col-lg-12">
+    <div class="row">
+      <div class="col-6">
+        <!-- Location title input -->
+        <div class="row mt-5">
+          <div class="col-lg-12">
             <h3>Location title</h3>
             <div class="row row-grid">
-                <div class="col-sm-6 col-lg-5 mb-4">
-                    <div class="form-group">
-                        <input class="form-control" placeholder="Enter title" type="text"
-                            [(ngModel)]="locationInfo.name" />
-                    </div>
-                </div>
+              <div class="col-sm-6 col-lg-5 mb-4">
+                  <div class="form-group">
+                      <input class="form-control" placeholder="Enter title" type="text"
+                          [(ngModel)]="locationInfo.name" />
+                  </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-
-    <div class="row justify-content-center mt-5">
-        <div class="col-lg-12">
-            <h3>Select location address</h3>
-            <div class="row">
-                <div class="col-lg-12">
-                    <input #mapSearchField placeholder="Search" type="text" class="rounded p-2 mt-2" style="width: 50%;"
-                        value="" />
-                    <google-map width="100%" height="600px">
-                    </google-map>
-                </div>
-            </div>
+        <!---->
+        <!-- Location image input -->
+        <div class="row mt-4">
+          <div class="col-lg-12">
+              <h3>Upload Image</h3>
+              <input type="file" (change)="onFileChanged($event)" style="display: none" #fileInput>
+              <button (click)="fileInput.click()" class="btn btn-warning mr-1">Select File</button>
+          </div>
         </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-lg-12">
-            <h3>Upload Image</h3>
-            <input type="file" (change)="onFileChanged($event)" style="display: none" #fileInput>
-            <button (click)="fileInput.click()" class="btn btn-warning mr-1">Select File</button>
+        <div class="row mt-4">
+          <div class="col-lg-12">
+              <div [innerHtml]='msg' *ngIf="msg" style="color: red;" class="mb-4"></div>
+              <img *ngIf="url" [src]="url" class="img-fluid">
+          </div>
+        </div> 
+        <!----> 
+        <!-- Location address input -->
+        <div class="row justify-content-center mt-5">
+          <div class="col-lg-12">
+              <h3>Select location address</h3>
+              <div class="row">
+                  <div class="col-lg-12">
+                      <input #mapSearchField placeholder="Search" type="text" class="rounded p-2 mt-2" style="width:40%;margin-left:150px;"/>
+                      <google-map width="100%" height="500px"></google-map>
+                  </div>
+              </div>
+          </div>
         </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-lg-12">
-            <div [innerHtml]='msg' *ngIf="msg" style="color: red;" class="mb-4"></div>
-            <img *ngIf="url" [src]="url">
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-lg-12">
-            <h3>Upload Audio File</h3>
+        <!---->
+      </div>
+      <div class="col-6">
+        <!-- Audio file input -->
+        <h3>Upload Audio File</h3>
+        <div class="row mt-4">
+          <div class="col-6">
             <input type="file" (change)="handleFileInput($event)" style="display: none" #audioFileInput>
-            <button (click)="audioFileInput.click()" class="btn btn-warning mr-1">Select Files</button>
-            <button (click)="saveAudiofile()" class="btn btn-warning mr-1">Save Audio</button>
+            <button (click)="audioFileInput.click()" class="btn btn-warning mr-2">Select Files</button>
+          </div>
+          <div class="col-6">
+            <button (click)="saveAudiofile()" class="btn btn-warning mr-1 float-end">Save Audio</button>
+          </div>
         </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-lg-12">
-            <div [innerHtml]='audiomsg' *ngIf="audiomsg" style="color: red;" class="mb-4"></div>
-            <div *ngIf="audiourl && !audiomsg">
-                <h6>{{ audioFile.name }}</h6>
-                <vm-player controls>
+
+        <div [innerHtml]='audiomsg' *ngIf="audiomsg" style="color: red;" class="mt-3"></div>
+        <div *ngIf="status" class="mt-3">{{ audioguide.name }} ready!</div>  
+        <div *ngIf="audioFileSaved === 'yes'" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+          <strong>Success!</strong> Audio file was succesfully saved
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div *ngIf="audioFileSaved === 'no'" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+          <strong>Error!</strong> Audio file could not be saved
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <!---->
+        <!-- Audio display -->
+        <div class="row mt-4">
+          <div *ngIf="audioguideList">
+            <div *ngFor="let audio of audioguideList">
+              <div class="card mb-3">
+                <div class="card-header">{{ audio.name }}</div>
+                <div class="card-body">
+                  <vm-player controls>
                     <vm-audio>
-                        <source data-src={{audiourl}} type="audio/mp3" />
-                        <track default>
+                      <source data-src={{audio.audioguideUrl}} type="audio/mp3" />
                     </vm-audio>
-                </vm-player>
+                  </vm-player>    
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+        <!---->
+
+        <!-- test -->
+        <vm-player controls>  
+          <vm-audio>    
+          <source data-src="https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" type="audio/mp3" />      
+          </vm-audio>  
+        </vm-player>
+
+      </div>
     </div>
 
-    <!-- <vm-player controls> 
-      <vm-audio>    
-        <source data-src="https://cs21003000097471a25.blob.core.windows.net/audiofiles/08 In Bloom.mp3"
-                type="audio/mp3"/>    
-        <track default>
-      </vm-audio>
-    </vm-player>   -->
 
     <div class="row mt-4 mb-5">
         <div class="col-lg-12">

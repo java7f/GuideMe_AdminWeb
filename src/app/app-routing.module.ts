@@ -11,7 +11,8 @@ const redirectLoggedInToLanding = () => redirectLoggedInTo(['landing']);
 const routes: Routes = [
   { path: "login", component: LoginComponent, ...canActivate(redirectLoggedInToLanding) }, // login
   { path: "landing", component: LandingComponent, ...canActivate(redirectUnauthorizedToLogin) }, // login
-  { path: "location/:id", component: AddLocationComponent, ...canActivate(redirectUnauthorizedToLogin) }, // add/edit locations
+  { path: "location/:id", component: AddLocationComponent, ...canActivate(redirectUnauthorizedToLogin) }, // edit locations
+  { path: "location", component: AddLocationComponent, ...canActivate(redirectUnauthorizedToLogin) } // add locations
 ];
 
 @NgModule({

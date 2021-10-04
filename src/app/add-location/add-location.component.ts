@@ -19,13 +19,16 @@ export class AddLocationComponent implements OnInit {
 
   url: any;
   msg: string = "";
-
+  
   audioFile: File;
   audiomsg: string = "";
   audiourl: any;
+  status: boolean = false;
+  audioFileSaved: string = "notYet";
 
   locationInfo: Location = new Location();
   audioguide: Audioguide = new Audioguide();
+  audioguideList: Audioguide[] = [];
   locationId: string;
 
   constructor(
@@ -37,6 +40,7 @@ export class AddLocationComponent implements OnInit {
     this.locationId = this.route.snapshot.paramMap.get('id')!;
     if(this.locationId) {
       this.getLocation()
+      this.getAudioguides()
     }
   }
 
@@ -101,6 +105,9 @@ export class AddLocationComponent implements OnInit {
     this.audioFile = event.target.files[0];
     this.audiourl = URL.createObjectURL(event.target.files[0]);
 
+    this.audioguide.name = this.audioFile.name;
+    this.audioguide.locationId = this.locationId;
+
     var reader = new FileReader();
 		reader.readAsDataURL(this.audioFile);
 		
@@ -108,6 +115,10 @@ export class AddLocationComponent implements OnInit {
 			let url  = reader.result;
       this.audioguide.audioFileBase64 = url!.toString().split(',')[1]; 
       this.audioguide.audioFileName = event.target.files[0].name;
+
+      if(url != null || url != ""){
+        this.status = true;
+      } 
 		}
 
     this.audiomsg = "";
@@ -136,8 +147,23 @@ export class AddLocationComponent implements OnInit {
   }
 
   async saveAudiofile() {
+    this.audioFileSaved = "notyet"
     try {
       await this.locationService.insertAudioguide(this.audioguide);
+      this.status = false;
+      this.audioFileSaved = "yes";
+      this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+    }
+    catch(error: any) {
+      this.audioFileSaved = "no";
+      console.log(error.message);
+    }
+  }
+
+  async getAudioguides() {
+    try {
+      this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+      console.log(this.audioguideList)
     }
     catch(error: any) {
       console.log(error.message);
