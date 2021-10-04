@@ -169,4 +169,14 @@ export class AddLocationComponent implements OnInit {
       console.log(error.message);
     }
   }
+
+  async deleteAudioguide(audioguideid: string) {
+    try {
+      await this.locationService.deleteAudioguide(audioguideid);
+      this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+    }
+    catch(error: any) {
+      console.log(error.message);
+    }
+  }
 }

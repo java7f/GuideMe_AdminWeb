@@ -75,7 +75,10 @@
           <div *ngIf="audioguideList">
             <div *ngFor="let audio of audioguideList">
               <div class="card mb-3">
-                <div class="card-header">{{ audio.name }}</div>
+                <div class="card-header">
+                  {{ audio.name }}
+                  <button type="button" class="btn btn-danger float-end" (click)="deleteAudioguide(audio.id)">Delete</button>
+                </div>
                 <div class="card-body">
                   <vm-player controls>
                     <vm-audio>
