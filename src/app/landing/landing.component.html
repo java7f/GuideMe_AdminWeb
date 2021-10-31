@@ -1,21 +1,34 @@
 <div class="container">
     <div class="row">
-        <div class="col-lg-6"><h1 class="text-left">Locations</h1></div>
-        <div class="col-lg-6"><button [routerLink]="['/location']" class="btn btn-primary mr-1 float-end">Add new location</button></div>
+        <div class="col-lg-6">
+            <h1 class="text-left">Locations</h1>
+        </div>
+        <div class="col-lg-6"><button [routerLink]="['/location']" class="btn btn-primary mr-1 float-end">Add new
+                location</button></div>
     </div>
-    <div class="row">
-        <div *ngFor="let location of locations" class="col-sm-4">
+    <div class="row mt-5" *ngIf="locations.length > 0; else NoLocations">
+        <div *ngFor="let location of locations" class="col-sm-3">
             <div class="card-deck">
-                <a [routerLink]="" (click)="editLocation(location.id)">
-                    <div class="card">
-                        <img src="{{location.locationPhotoUrl}}" height="300" class="card-img-top" alt="...">
+                <a [routerLink]="" (click)="editLocation(location.id)"
+                    style="text-decoration: none; color: var(--primary);">
+                    <div class="card shadow-sm">
+                        <img src="{{location.locationPhotoUrl}}" class="card-img-top" alt="...">
                         <div class="card-body">
-                          <h5 class="card-title">{{location.name}}</h5>
+                            <h5 class="card-title mb-3">{{location.name}}</h5>
+                        </div>
+                        <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <small>
+                                <fa-icon [icon]="mapMarker" class="mr-3"></fa-icon>
+                                {{location.address.city}}, {{location.address.country}}
+                            </small>
                         </div>
                     </div>
                 </a>
             </div>
         </div>
     </div>
-
 </div>
+
+<ng-template #NoLocations class="row mt-5">
+    <h4 class="col-sm-12 text-center" style="color: gray;">You have no locations.</h4>
+</ng-template>

@@ -1,182 +1,233 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Audioguide } from 'src/models/Audioguide';
-import { Location } from 'src/models/Location';
+import { Address, Coordinate, Location } from 'src/models/Location';
 import { LocationsService } from 'src/services/locations.service';
+import { Location as LocationNav } from '@angular/common'
 
 @Component({
-  selector: 'app-add-location',
-  templateUrl: './add-location.component.html',
-  styleUrls: ['./add-location.component.css']
+    selector: 'app-add-location',
+    templateUrl: './add-location.component.html',
+    styleUrls: ['./add-location.component.css']
 })
 export class AddLocationComponent implements OnInit {
 
-  @ViewChild('mapSearchField') searchField: ElementRef;
-  @ViewChild(GoogleMap) map: GoogleMap;
+    @ViewChild('mapSearchField') searchField: ElementRef;
+    @ViewChild(GoogleMap) map: GoogleMap;
+    markerOptions: google.maps.MarkerOptions = {draggable: false};
+    markerPosition: google.maps.LatLngLiteral;
 
-  isCollapsed = true;
+    isCollapsed = true;
 
-  url: any;
-  msg: string = "";
-  
-  audioFile: File;
-  audiomsg: string = "";
-  audiourl: any;
-  status: boolean = false;
-  audioFileSaved: string = "notYet";
+    url: any;
+    msg: string = "";
 
-  locationInfo: Location = new Location();
-  audioguide: Audioguide = new Audioguide();
-  audioguideList: Audioguide[] = [];
-  locationId: string;
+    audioFile: File;
+    audiomsg: string = "";
+    audiourl: any;
+    status: boolean = false;
+    audioFileSaved: string = "notYet";
 
-  constructor(
-    private locationService: LocationsService,
-    private route: ActivatedRoute 
-  ) {}
+    locationInfo: Location = new Location();
+    audioguide: Audioguide = new Audioguide();
+    audioguideList: Audioguide[] = [];
+    locationId: string;
 
-  ngOnInit() {
-    this.locationId = this.route.snapshot.paramMap.get('id')!;
-    if(this.locationId) {
-      this.getLocation()
-      this.getAudioguides()
-    }
-  }
+    constructor(
+        private locationService: LocationsService,
+        private route: ActivatedRoute,
+        private location: LocationNav
+    ) { }
 
-  ngAfterViewInit() {
-    const searchBox = new google.maps.places.SearchBox(this.searchField.nativeElement);
-    this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(this.searchField.nativeElement);
-
-    searchBox.addListener('places_changed', () => {
-      const places = searchBox.getPlaces();
-      if(places.length === 0) {
-        return;
-      }
-      const bounds = new google.maps.LatLngBounds();
-      places.forEach(place => {
-        if(!place.geometry || !place.geometry.location) {
-          return;
+    ngOnInit() {
+        this.locationId = this.route.snapshot.paramMap.get('id')!;
+        if (this.locationId) {
+            this.getLocation()
+            this.getAudioguides()
         }
-        if(place.geometry.viewport) {
-          // only geocodes have viewport
-          bounds.union(place.geometry.viewport);
-        } else {
-          bounds.extend(place.geometry.location);
+    }
+
+    ngAfterViewInit() {
+        const searchBox = new google.maps.places.SearchBox(this.searchField.nativeElement);
+        this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(this.searchField.nativeElement);
+
+        searchBox.addListener('places_changed', () => {
+            const places = searchBox.getPlaces();
+            if (places.length === 0) {
+                return;
+            }
+            const bounds = new google.maps.LatLngBounds();
+            places.forEach(place => {
+                if (!place.geometry || !place.geometry.location) {
+                    return;
+                }
+                if (place.geometry.viewport) {
+                    // only geocodes have viewport
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+
+                this.locationInfo.address = this.buildLocationAddress(place);
+            });
+            this.map.fitBounds(bounds);
+            this.setLocationMarkerInMap();
+        })
+    }
+
+    onFileChanged(event: any) {
+        if (!event.target.files[0] || event.target.files[0].length == 0) {
+            this.msg = 'You must select an image';
+            return;
         }
-        this.locationInfo.coordinates.latitude = place.geometry.location.lat();
-        this.locationInfo.coordinates.longitude = place.geometry.location.lng();
-      });
-      this.map.fitBounds(bounds);
-    })
-  }
 
-  onFileChanged(event: any) {
-    if(!event.target.files[0] || event.target.files[0].length == 0) {
-			this.msg = 'You must select an image';
-			return;
-		}
+        var mimeType = event.target.files[0].type;
 
-    var mimeType = event.target.files[0].type;
-		
-		if (mimeType.match(/image\/*/) == null) {
-			this.msg = "Only images are supported";
-			return;
-		}
-		
-		var reader = new FileReader();
-		reader.readAsDataURL(event.target.files[0]);
-		
-		reader.onload = (_event) => {
-      this.msg = "";
-			this.url = reader.result;
-      this.locationInfo.locationPhotoFileBase64 = this.url.toString().split(',')[1]; 
-      this.locationInfo.locationPhotoFileName = event.target.files[0].name;
-		}
-  }
+        if (mimeType.match(/image\/*/) == null) {
+            this.msg = "Only images are supported";
+            return;
+        }
 
-  handleFileInput(event: any) {
-    var mimeType = event.target.files[0].type;
-		if (mimeType.match(/audio\/*/) == null) {
-			this.audiomsg = "Only audios are supported";
-			return;
-		}
+        var reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
 
-    this.audioFile = event.target.files[0];
-    this.audiourl = URL.createObjectURL(event.target.files[0]);
-
-    this.audioguide.name = this.audioFile.name;
-    this.audioguide.locationId = this.locationId;
-
-    var reader = new FileReader();
-		reader.readAsDataURL(this.audioFile);
-		
-		reader.onload = (_event) => {
-			let url  = reader.result;
-      this.audioguide.audioFileBase64 = url!.toString().split(',')[1]; 
-      this.audioguide.audioFileName = event.target.files[0].name;
-
-      if(url != null || url != ""){
-        this.status = true;
-      } 
-		}
-
-    this.audiomsg = "";
-  }
-
-  ngOnDestroy() {
-  }
-
-  async saveLocation() {
-    try {
-      console.log(this.locationInfo);
-      await this.locationService.insertLocation(this.locationInfo);
+        reader.onload = (_event) => {
+            this.msg = "";
+            this.url = reader.result;
+            this.locationInfo.locationPhotoFileBase64 = this.url.toString().split(',')[1];
+            this.locationInfo.locationPhotoFileName = event.target.files[0].name;
+        }
     }
-    catch(error: any) {
-      console.log(error.message);
-    }
-  }
 
-  async getLocation() {
-    try {
-      this.locationInfo = await this.locationService.getLocation(this.locationId);
-    }
-    catch(error: any) {
-      console.log(error.message);
-    }
-  }
+    handleFileInput(event: any) {
+        var mimeType = event.target.files[0].type;
+        if (mimeType.match(/audio\/*/) == null) {
+            this.audiomsg = "Only audios are supported";
+            return;
+        }
 
-  async saveAudiofile() {
-    this.audioFileSaved = "notyet"
-    try {
-      await this.locationService.insertAudioguide(this.audioguide);
-      this.status = false;
-      this.audioFileSaved = "yes";
-      this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
-    }
-    catch(error: any) {
-      this.audioFileSaved = "no";
-      console.log(error.message);
-    }
-  }
+        this.audioFile = event.target.files[0];
+        this.audiourl = URL.createObjectURL(event.target.files[0]);
 
-  async getAudioguides() {
-    try {
-      this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
-      console.log(this.audioguideList)
-    }
-    catch(error: any) {
-      console.log(error.message);
-    }
-  }
+        this.audioguide.name = this.audioFile.name;
+        this.audioguide.locationId = this.locationId;
 
-  async deleteAudioguide(audioguideid: string) {
-    try {
-      await this.locationService.deleteAudioguide(audioguideid);
-      this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+        var reader = new FileReader();
+        reader.readAsDataURL(this.audioFile);
+
+        reader.onload = (_event) => {
+            let url = reader.result;
+            this.audioguide.audioFileBase64 = url!.toString().split(',')[1];
+            this.audioguide.audioFileName = event.target.files[0].name;
+
+            if (url != null || url != "") {
+                this.status = true;
+            }
+        }
+
+        this.audiomsg = "";
     }
-    catch(error: any) {
-      console.log(error.message);
+
+    ngOnDestroy() {
     }
-  }
+
+    async saveLocation() {
+        try {
+            if(!this.locationId)
+                await this.locationService.insertLocation(this.locationInfo);
+            else
+                await this.locationService.updateLocation(this.locationInfo);
+        }
+        catch (error: any) {
+            console.log(error.message);
+        }
+    }
+
+    async getLocation() {
+        try {
+            this.locationInfo = await this.locationService.getLocation(this.locationId);
+            this.url = this.locationInfo.locationPhotoUrl;
+            this.initLocationMapPosition();
+        }
+        catch (error: any) {
+            console.log(error.message);
+        }
+    }
+
+    async saveAudiofile() {
+        this.audioFileSaved = "notyet"
+        try {
+            await this.locationService.insertAudioguide(this.audioguide);
+            this.status = false;
+            this.audioFileSaved = "yes";
+            this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+        }
+        catch (error: any) {
+            this.audioFileSaved = "no";
+            console.log(error.message);
+        }
+    }
+
+    async getAudioguides() {
+        try {
+            this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+            console.log(this.audioguideList)
+        }
+        catch (error: any) {
+            console.log(error.message);
+        }
+    }
+
+    async deleteAudioguide(audioguideid: string) {
+        try {
+            await this.locationService.deleteAudioguide(audioguideid);
+            this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+        }
+        catch (error: any) {
+            console.log(error.message);
+        }
+    }
+
+    cancel() {
+        this.location.back()
+    }
+
+    private buildLocationAddress(place: google.maps.places.PlaceResult): Address {
+        let countryInfo: string = "";
+        let cityInfo: string = "";
+        place.address_components?.forEach(addressComp => {
+
+            if (addressComp.types.includes("locality")){
+                cityInfo = addressComp.long_name;
+            }
+        
+            if (addressComp.types.includes("country")){ 
+                countryInfo = addressComp.long_name;
+            }
+        })
+
+        return <Address> {
+            country: countryInfo,
+            city: cityInfo,
+            coordinates: <Coordinate> {
+                latitude: place.geometry?.location.lat(),
+                longitude: place.geometry?.location.lng(),
+            }
+        }
+    }
+
+    private setLocationMarkerInMap() {
+        this.markerPosition = {lat: this.locationInfo.address.coordinates.latitude, lng: this.locationInfo.address.coordinates.longitude}
+    }
+
+    private initLocationMapPosition() {
+        if(this.locationInfo) {
+            const bounds = new google.maps.LatLngBounds();
+            const locationLatLng = new google.maps.LatLng(this.locationInfo.address.coordinates.latitude, this.locationInfo.address.coordinates.longitude)
+            bounds.extend(locationLatLng);
+            this.map.fitBounds(bounds);
+            this.setLocationMarkerInMap();
+        }
+    }
 }

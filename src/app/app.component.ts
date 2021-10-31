@@ -8,6 +8,7 @@ import { AuthenticationService } from 'src/services/authentication.service';
 })
 export class AppComponent {
   title = 'guideme-admin-web';
+  currentUser: string;
 
   constructor(
     private authenticationService: AuthenticationService
@@ -15,5 +16,9 @@ export class AppComponent {
 
   signOut() {
     this.authenticationService.signOut();
+  }
+
+  async getCurrentUserEmail() {
+    this.currentUser = await this.authenticationService.getCurrentUserEmail();
   }
 }

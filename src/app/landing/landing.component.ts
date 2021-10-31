@@ -1,37 +1,47 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 import { Location } from 'src/models/Location';
 import { Utils } from 'src/models/Utils';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { LocationsService } from 'src/services/locations.service';
 
 @Component({
-  selector: 'app-landing',
-  templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.css']
+    selector: 'app-landing',
+    templateUrl: './landing.component.html',
+    styleUrls: ['./landing.component.css']
 })
 export class LandingComponent implements OnInit {
 
-  locations: Location[] = [];
+    //ICONS
+    mapMarker = faMapMarkerAlt
+    trash = faTrashAlt
 
-  constructor(
-    private locationService: LocationsService,
-    private router: Router
-  ) { }
+    locations: Location[] = [];
 
-  ngOnInit(): void {
-    this.getLocations();
-  }
+    constructor(
+        private locationService: LocationsService,
+        private router: Router
+    ) { }
 
-  async getLocations() {
-    try {
-      this.locations = await this.locationService.getAllLocations();
+    ngOnInit(): void {
+        this.getLocations();
     }
-    catch(error: any) {console.error(error.message)}
-  }
 
-  editLocation(locationId: string) {
-    this.router.navigateByUrl(`${Utils.EDIT_ADD_LOCATION_URL}/${locationId}`);
-  }
+    async getLocations() {
+        try {
+            this.locations = await this.locationService.getAllLocations();
+        }
+        catch (error: any) { console.error(error.message) }
+    }
+
+    async deleteLocation() {
+        
+    }
+
+    editLocation(locationId: string) {
+        this.router.navigateByUrl(`${Utils.EDIT_ADD_LOCATION_URL}/${locationId}`);
+    }
 
 }

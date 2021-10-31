@@ -9,6 +9,7 @@ const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 const redirectLoggedInToLanding = () => redirectLoggedInTo(['landing']);
 
 const routes: Routes = [
+  { path: '', redirectTo: '/landing', pathMatch: 'full' },
   { path: "login", component: LoginComponent, ...canActivate(redirectLoggedInToLanding) }, // login
   { path: "landing", component: LandingComponent, ...canActivate(redirectUnauthorizedToLogin) }, // login
   { path: "location/:id", component: AddLocationComponent, ...canActivate(redirectUnauthorizedToLogin) }, // edit locations

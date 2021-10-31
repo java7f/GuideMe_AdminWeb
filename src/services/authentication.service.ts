@@ -65,4 +65,14 @@ export class AuthenticationService {
     let userId = currentUser?.uid;
     return userId ?? "";
   }
+
+  /**
+   * Gets the current user email
+   * @returns String Promise with the current user email
+   */
+   async getCurrentUserEmail(): Promise<string> {
+    let currentUser = await this.angularFireAuth.currentUser
+    let email = currentUser?.email;
+    return email ?? "";
+  }
 }

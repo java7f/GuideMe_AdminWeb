@@ -16,6 +16,7 @@ import { AddLocationComponent } from './add-location/add-location.component';
 
 import { GoogleMapsModule } from '@angular/google-maps'
 import { VimeModule } from '@vime/angular';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { VimeModule } from '@vime/angular';
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     GoogleMapsModule,
-    VimeModule
+    VimeModule,
+    FontAwesomeModule
   ],
   providers: [
     AuthenticationService,
