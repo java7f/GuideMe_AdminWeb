@@ -31,6 +31,7 @@ export class AddLocationComponent implements OnInit {
 
     locationInfo: Location = new Location();
     audioguide: Audioguide = new Audioguide();
+    editAudiofile: Audioguide = new Audioguide();
     audioguideList: Audioguide[] = [];
     locationId: string;
 
@@ -169,10 +170,29 @@ export class AddLocationComponent implements OnInit {
         }
     }
 
+    async editAudioguide(audioguideId: string) {
+        try {
+            this.editAudiofile = await this.locationService.getAudioguide(audioguideId);
+        }
+        catch (error: any) {
+            console.log(error.message);
+        }
+    }
+
+    async saveEditAudioguide() {
+        try {
+            console.log(this.editAudiofile);
+            await this.locationService.updateAudioguide(this.editAudiofile);
+            this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+        } 
+        catch (error: any) {
+            console.log(error.message);
+        }
+    }
+
     async getAudioguides() {
         try {
             this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
-            console.log(this.audioguideList)
         }
         catch (error: any) {
             console.log(error.message);

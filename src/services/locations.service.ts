@@ -60,4 +60,14 @@ export class LocationsService {
     let headerOptions = await this.authenticationService.getTokenHeader();
     return await this.http.delete<boolean>(`${Utils.AUDIOGUIDES_API_URL}/${audioguideId}`, headerOptions).toPromise();
   }
+
+  public async updateAudioguide(audioguide: Audioguide): Promise<void> {
+    let headerOptions = await this.authenticationService.getTokenHeader();
+    await this.http.put<void>(`${Utils.AUDIOGUIDES_API_URL}`, audioguide, headerOptions).toPromise();
+  }
+
+  public async getAudioguide(audioguideId: string): Promise<Audioguide> {
+    let headerOptions = await this.authenticationService.getTokenHeader();
+    return await this.http.get<Audioguide>(`${Utils.AUDIOGUIDES_API_URL}/getAudioguide/${audioguideId}`, headerOptions).toPromise();
+  }
 }

@@ -94,7 +94,8 @@
 									<div class="float-end">
 										<button type="button" class="btn btn-secondary" 
 												style="margin-right:10px;" data-bs-toggle="modal" 
-												data-bs-target="#staticBackdrop">Edit</button>
+												data-bs-target="#staticBackdrop"
+												(click)="editAudioguide(audio.id)">Edit</button>
 										<button type="button" class="btn btn-danger"
 											(click)="deleteAudioguide(audio.id)">Delete</button>	
 									</div>
@@ -111,35 +112,34 @@
 					</div>
 				</div>
 				<!---->
-				<!-- Modal -->
+				<!-- TODO: make it actually save stuff -->
 				<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 					<div class="modal-dialog">
 	  					<div class="modal-content">
 							<div class="modal-header">
-		  						<h5 class="modal-title" id="staticBackdropLabel">Edit Location</h5>
+		  						<h5 class="modal-title" id="staticBackdropLabel">Edit Audiofile</h5>
 		  						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">
 								<div class="mb-3">
-									<label for="location-name" class="col-form-label">Location name:</label>
-									<input type="text" class="form-control" id="location-name">
+									<label for="location-name" class="col-form-label">Audiofile name:</label>
+									<input type="text" class="form-control" id="location-name" [(ngModel)]="editAudiofile.name">
 								</div>
 								<div class="mb-4">
 									<label for="mac-address" class="col-form-label">Beacon MAC address:</label>
-									<input type="text" class="form-control" id="mac-address">
+									<input type="text" class="form-control" id="mac-address" [(ngModel)]="editAudiofile.macAddress">
 								</div>
 								<div class="mb-3">
-									<select class="form-select" aria-label="Default select example">
-										<option selected>Select language</option>
-										<option value="1">Spanish</option>
-										<option value="2">English</option>
-										<option value="3">German</option>
+									<label for="select-language" class="col-form-label">Select language:</label>
+									<select class="form-select" [(ngModel)]="editAudiofile.language" name="select-language" aria-label="Default select example">
+										<option value="spanish">Spanish</option>
+										<option value="english">English</option>
 									  </select>
 								</div>
 							</div>
 							<div class="modal-footer">
 		  						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-		  						<button type="button" class="btn btn-primary">Save</button>
+		  						<button type="button" class="btn btn-primary" (click)="saveEditAudioguide()" data-bs-dismiss="modal">Save</button>
 							</div>
 	  					</div>
 					</div>
