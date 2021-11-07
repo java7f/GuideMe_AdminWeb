@@ -4,7 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Audioguide } from 'src/models/Audioguide';
 import { Address, Coordinate, Location } from 'src/models/Location';
 import { LocationsService } from 'src/services/locations.service';
-import { Location as LocationNav } from '@angular/common'
+import { Location as LocationNav } from '@angular/common';
+import { faEdit, faTrash, faSave } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-add-location',
@@ -34,6 +35,14 @@ export class AddLocationComponent implements OnInit {
     editAudiofile: Audioguide = new Audioguide();
     audioguideList: Audioguide[] = [];
     locationId: string;
+
+    // icons
+    faEdit = faEdit;
+    faTrash = faTrash;
+    faSave = faSave;
+
+    errorStatus: number;
+    locationSavedStatus: string;
 
     constructor(
         private locationService: LocationsService,
@@ -134,14 +143,21 @@ export class AddLocationComponent implements OnInit {
     }
 
     async saveLocation() {
+        this.errorStatus = 0;
+
         try {
-            if(!this.locationId)
+            if(!this.locationId) {
                 await this.locationService.insertLocation(this.locationInfo);
-            else
+                this.locationSavedStatus = "saved";
+            }
+            else {
                 await this.locationService.updateLocation(this.locationInfo);
+                this.locationSavedStatus = "edited";
+            }
         }
         catch (error: any) {
-            console.log(error.message);
+            console.log(error);
+            this.errorStatus = error.status;
         }
     }
 
@@ -157,16 +173,16 @@ export class AddLocationComponent implements OnInit {
     }
 
     async saveAudiofile() {
-        this.audioFileSaved = "notyet"
         try {
+            this.audioFileSaved = "notyet"
             await this.locationService.insertAudioguide(this.audioguide);
             this.status = false;
-            this.audioFileSaved = "yes";
             this.audioguideList = await this.locationService.getAllAudioguidesForLocation(this.locationId);
+            this.audioFileSaved = "yes";
         }
         catch (error: any) {
             this.audioFileSaved = "no";
-            console.log(error.message);
+            console.log(error);
         }
     }
 

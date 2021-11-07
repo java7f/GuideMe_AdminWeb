@@ -6,6 +6,7 @@ import { Location } from 'src/models/Location';
 import { Utils } from 'src/models/Utils';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { LocationsService } from 'src/services/locations.service';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-landing',
@@ -16,7 +17,7 @@ export class LandingComponent implements OnInit {
 
     //ICONS
     mapMarker = faMapMarkerAlt
-    trash = faTrashAlt
+    faPlus = faPlus
 
     locations: Location[] = [];
 
