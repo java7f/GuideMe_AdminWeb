@@ -10,6 +10,13 @@
             </button>
         </div>
     </div>
+    <div *ngIf="locationsFound === 'notyet'" class="row mt-5">
+        <div class="col-sm-12 text-center">
+            <div class="spinner-grow text-secondary mt-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>  
+    </div>
     <div class="row mt-5" *ngIf="locations.length > 0; else NoLocations">
         <div *ngFor="let location of locations" class="col-sm-3">
             <div class="card-deck">
@@ -17,8 +24,8 @@
                     style="text-decoration: none; color: var(--primary);">
                     <div class="card shadow-sm">
                         <img src="{{location.locationPhotoUrl}}" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title mb-3">{{location.name}}</h5>
+                        <div class="card-body col-11">
+                            <h5 class="card-title mb-3 text-truncate">{{location.name}}</h5>
                         </div>
                         <div class="card-footer text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             <small>

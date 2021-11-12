@@ -20,6 +20,7 @@ export class LandingComponent implements OnInit {
     faPlus = faPlus
 
     locations: Location[] = [];
+    locationsFound: string = "";
 
     constructor(
         private locationService: LocationsService,
@@ -31,8 +32,11 @@ export class LandingComponent implements OnInit {
     }
 
     async getLocations() {
+        console.log(this.locationsFound)
         try {
+            this.locationsFound = "notyet";
             this.locations = await this.locationService.getAllLocations();
+            this.locationsFound = "yes";
         }
         catch (error: any) { console.error(error.message) }
     }
