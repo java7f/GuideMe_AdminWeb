@@ -19,7 +19,7 @@
     </div>
     <div class="row mt-5" *ngIf="locations.length > 0; else NoLocations">
         <div *ngFor="let location of locations" class="col-sm-3">
-            <div class="card-deck">
+            <div class="card-deck mb-4">
                 <a [routerLink]="" (click)="editLocation(location.id)"
                     style="text-decoration: none; color: var(--primary);">
                     <div class="card shadow-sm">
